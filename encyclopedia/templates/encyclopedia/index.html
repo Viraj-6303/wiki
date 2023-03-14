@@ -5,8 +5,11 @@
 {% endblock %}
 
 {% block body %}
-    <h1>All Pages</h1>
-
+    {% if all_pages %}
+        <h1>All Pages</h1>
+    {% else %}
+        <h1>Pages with '{{name}}'</h1>
+    {% endif %}
     <ul>
         {% for entry in entries %}
             <li><a href="wiki/{{entry}}">{{ entry }}</a></li>

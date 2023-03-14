@@ -11,7 +11,8 @@ from markdown2 import markdown
 
 def index(request):
     return render(request, "encyclopedia/index.html", {
-        "entries": util.list_entries()
+        "entries": util.list_entries(),
+        "all_pages" : all_pages,
     })
 
 
@@ -45,6 +46,8 @@ def search(request):
             exist = True
     if exist:
         return render(request, "encyclopedia/index.html", {
-        "entries": search
+        "entries": search,
+        "all_pages" : False,
+        "name" : var,
     })
     return HttpResponseRedirect(reverse("name", kwargs={'var':var}))
