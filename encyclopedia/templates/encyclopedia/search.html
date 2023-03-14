@@ -1,0 +1,15 @@
+{% extends 'encyclopedia/layout.html' %}
+
+{% block title %}
+    {{ name }} - Wiki
+{% endblock %}
+
+{% block body %}
+    {% if exist %}
+        {{ entry | safe }}
+    {% else %}
+        <h1>The entry does not exist.</h1>
+    {% endif %}
+{% endblock %}
+
+    
