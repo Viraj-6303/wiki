@@ -1,18 +1,24 @@
+from django import forms
 from django.shortcuts import render
 import markdown2
-from django.http import HttpResponse,HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseBadRequest,HttpResponseRedirect
 from django.urls import reverse
+from django.contrib import messages
 
 
 from . import util
 
 from markdown2 import markdown
 
+class CreateNewPage(forms.Form):
+    title = forms.CharField(label="Title", max_length=15)
+    content = forms.CharField(label="stuff", widget=forms.Textarea(attrs={'style' : 'width: 50%; height:50%'}), max_length=200)
+    
 
 def index(request):
     return render(request, "encyclopedia/index.html", {
         "entries": util.list_entries(),
-        "all_pages" : all_pages,
+        "all_pages" : True,
     })
 
 
@@ -51,3 +57,27 @@ def search(request):
         "name" : var,
     })
     return HttpResponseRedirect(reverse("name", kwargs={'var':var}))
+
+
+def new(request):
+    titles = util.list_entries()
+    if request.method == "POST":
+        form = CreateNewPage(request.POST) 
+        if form.is_valid():
+            new_title = str(form.cleaned_data["title"]).capitalize()
+            content = str(form.cleaned_data["content"])
+            if new_title.upper() in (title.upper() for title in titles):
+                messages.error(request, 'Title already exists')
+            else:
+                file_path = 'entries/' + str(new_title) + '.md'
+                with open(file_path, 'w') as f:
+                    f.write(content)
+                return HttpResponseRedirect(reverse("name", kwargs={'var':new_title}))
+
+    return render(request, "encyclopedia/new.html", {
+        "title" : CreateNewPage(),
+        "error" : False
+    })
+
+def edit(request):
+    return HttpResponse('Hello')
