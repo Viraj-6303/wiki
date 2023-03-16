@@ -7,7 +7,7 @@
 {% block body %}
     {% if exist %}
         {{ entry | safe }}
-        <a href="{% url 'edit' %}"> Edit content </a>
+        <a href="{% url 'edit' name %}"> Edit content </a>
     {% else %}
         <h1>The entry does not exist.</h1>
     {% endif %}

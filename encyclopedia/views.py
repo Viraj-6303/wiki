@@ -4,7 +4,7 @@ import markdown2
 from django.http import HttpResponse, HttpResponseBadRequest,HttpResponseRedirect
 from django.urls import reverse
 from django.contrib import messages
-
+import random
 
 from . import util
 
@@ -79,5 +79,27 @@ def new(request):
         "error" : False
     })
 
-def edit(request):
-    return HttpResponse('Hello')
+def edit(request, edit_name):
+    file_name = 'entries/' + edit_name + '.md'
+    with open(file_name, 'r') as f:
+        existing_content = f.read()
+    if request.method == "POST":
+        new_content = str(request.POST.get("input_content"))
+        lines = new_content.split('\n')
+        lines = [line.rstrip() for line in lines]
+        new_content = '\n'.join(lines)
+        if new_content.replace("\t",'').replace('\n','') == existing_content.replace("\t",'').replace('\n',''):
+            return name(request, edit_name)
+        else:
+            with open(file_name, 'w') as f:
+                f.write(new_content.rstrip())
+            return name(request, edit_name)
+    return render(request, 'encyclopedia/edit.html', {
+        "content" : existing_content,
+        "name" : edit_name,
+    })
+
+def random_page(request):
+    entries = util.list_entries()
+    page = random.choice(entries)
+    return HttpResponseRedirect(reverse('name', kwargs={'var':page}))
